@@ -1,0 +1,39 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 19-ago-2014, 11.27.05
+    Author     : matteo.lazzarin
+*/
+
+.tsw-button{
+    margin-top: 10px;
+}
+
+.tsw-table table{
+    width: 80%;
+}
+
+.tsw-table table thead{
+    background-color: #008aff;
+    color: white;
+}
+
+.tsw-table table tbody{
+    background-color: white;
+}
+
+.tsw-table table tbody td{
+    padding: 5px;
+    text-align: center;
+}
+.tsw-table table tbody td .flag{
+    display: inline-block;
+    padding: 5px;
+    text-align: left;
+}
+.tsw-table table tbody td .flag select{
+    min-width: 300px;
+}
