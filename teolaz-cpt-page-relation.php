@@ -93,10 +93,20 @@
                 'flushIfNeeded',
             ));
             
-            add_action('registered_post_type', array(
+            /**
+             * @deprecated from v1.1, uses register_post_type_args instead
+             */
+//            add_action('registered_post_type', array(
+//                $this,
+//                'rewriteCptRegistration',
+//            ), 10000, 2);
+            
+            add_filter('register_post_type_args', array(
                 $this,
-                'rewriteCptRegistration',
+                'rewriteCPTArgs',
             ), 10000, 2);
+            
+            
             add_action('wp_nav_menu_objects', array(
                 $this,
                 'sortMenuItems',
@@ -264,47 +274,77 @@
             }
         }
         
+        /**
+         * @param $post_type
+         * @param $args
+         * @deprecated from v1.1, uses rewriteCPTArgs instead
+         */
         function rewriteCptRegistration( $post_type, $args )
         {
-            ++self::$depthRewriteCptRegistration;
+			die('This action was deprecated from v1.1');
+            // ++self::$depthRewriteCptRegistration;
             
-            if ( self::$depthRewriteCptRegistration === 0 ) {
-                // unregister post_type if it's inside the array of pages for custom posts
+            // if ( self::$depthRewriteCptRegistration === 0 ) {
+                unregister post_type if it's inside the array of pages for custom posts
                 
-                if ( array_key_exists($post_type, $this->post_page_rel) ) {
-                    // get current language
-                    if ( $this->languages == null )
-                        $language = 'default';
-                    else
-                        $language = ICL_LANGUAGE_CODE;
+                // if ( array_key_exists($post_type, $this->post_page_rel) ) {
+                    get current language
+                    // if ( $this->languages == null )
+                        // $language = 'default';
+                    // else
+                        // $language = ICL_LANGUAGE_CODE;
                     
-                    // get $args as array
-                    if ( is_object($args) )
-                        $args = get_object_vars($args);
-                    if ( is_object($args[ 'labels' ]) )
-                        $args[ 'labels' ] = get_object_vars($args[ 'labels' ]);
-                    if ( is_object($args[ 'cap' ]) )
-                        $args[ 'cap' ] = get_object_vars($args[ 'cap' ]);
+                    get $args as array
+                    // if ( is_object($args) )
+                        // $args = get_object_vars($args);
+                    // if ( is_object($args[ 'labels' ]) )
+                        // $args[ 'labels' ] = get_object_vars($args[ 'labels' ]);
+                    // if ( is_object($args[ 'cap' ]) )
+                        // $args[ 'cap' ] = get_object_vars($args[ 'cap' ]);
                     
-                    // get modded slug
-                    $slug = $this->get_mod_slug($post_type, $language);
-                    if ( !empty( $slug ) ) :
-                        if ( $post_type != 'slides' && $args[ 'rewrite' ][ 'slug' ] != $slug ) :
-                            unregister_post_type($post_type);
-                            $args[ 'rewrite' ] = array(
-                                'slug'       => $slug,
-                                'feeds'      => false,
-                                'with_front' => false,
-                            );
-                            register_post_type($post_type, $args);
+                    get modded slug
+                    // $slug = $this->get_mod_slug($post_type, $language);
+                    // if ( !empty( $slug ) ) :
+                        // if ( $post_type != 'slides' && $args[ 'rewrite' ][ 'slug' ] != $slug ) :
+                            // unregister_post_type($post_type);
+                            // $args[ 'rewrite' ] = array(
+                                // 'slug'       => $slug,
+                                // 'feeds'      => false,
+                                // 'with_front' => false,
+                            // );
+                            // register_post_type($post_type, $args);
                         
-                        endif;
+                        // endif;
                     
-                    endif;
+                    // endif;
+                // }
+            // }
+            
+            // --self::$depthRewriteCptRegistration;
+        }
+        
+        function rewriteCPTArgs( $args, $post_type )
+        {
+            if ( array_key_exists($post_type, $this->post_page_rel) ) {
+                // get current language
+                if ( $this->languages == null )
+                    $language = 'default';
+                else
+                    $language = ICL_LANGUAGE_CODE;
+                
+                // get modded slug
+                $slug = $this->get_mod_slug($post_type, $language);
+                
+                if ( !empty( $slug ) && $post_type != 'slides' && $args[ 'rewrite' ][ 'slug' ] != $slug ) {
+                    $args[ 'rewrite' ] = array(
+                        'slug'       => $slug,
+                        'feeds'      => false,
+                        'with_front' => false,
+                    );
                 }
             }
             
-            --self::$depthRewriteCptRegistration;
+            return $args;
         }
         
         // Breadcrumbs mod on rewritten rules for cpt
@@ -722,7 +762,7 @@
                     $img = get_the_post_thumbnail_url($ID, $size, $args);
             }
         }
-    
+        
         return $img;
     }
     
