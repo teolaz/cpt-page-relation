@@ -30,7 +30,7 @@
 		include_once $file;
 	}
 	
-	define( TEXTDOMAIN, 'Teolaz Plugins' );
+	define( 'TEXTDOMAIN', 'Teolaz Plugins' );
 	
 	class TeolazCptPageRelation {
 		
