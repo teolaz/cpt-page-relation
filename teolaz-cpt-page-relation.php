@@ -106,6 +106,17 @@
 				'rewriteCPTArgs',
 			), 10000, 2 );
 			
+			// added for multisite language switcher
+			add_filter( 'post_type_archive_link', array(
+				$this,
+				'filterPostTypeArchiveLink',
+			), 10000, 2 );
+			
+			// added for multisite language switcher
+			add_filter( 'post_type_link', array(
+				$this,
+				'filterPostTypeSingleLink',
+			), 10000, 4 );
 			
 			add_action( 'wp_nav_menu_objects', array(
 				$this,
@@ -354,6 +365,32 @@
 			}
 			
 			return $args;
+		}
+		
+		function filterPostTypeArchiveLink( $link, $post_type ) {
+			if ( is_post_type_archive() ) {
+				$page = getRelatedPageForCPT( $post_type );
+				if ( $page ) {
+					return get_permalink( $page );
+				}
+			}
+			
+			return $link;
+		}
+		
+		function filterPostTypeSingleLink( $post_link, $post, $leavename, $sample ) {
+			/**
+			 * @var $current_blog WP_Site
+			 */
+			global $current_blog;
+			if ( get_current_blog_id() != $current_blog->blog_id ) {
+				$page = getRelatedPageForCPT( $post->post_type );
+				if ( $page ) {
+					return get_permalink( $page ) . $post->post_name;
+				}
+			}
+			
+			return $post_link;
 		}
 		
 		// Breadcrumbs mod on rewritten rules for cpt
